@@ -451,3 +451,59 @@ An interesting edge-case:
 What should the response be? - [less surprising behavior](https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/) is to return success.
 
 In summary, idempotent APIs enable more robust clients, since they can always retry failures without worrying about consequences.
+
+
+---
+
+ACID is an acronym used to describe the properties of database transactions intended to guarantee data validity despite errors, power failures, and other mishaps. ACID stands for Atomicity, Consistency, Isolation, and Durability. These properties ensure reliable processing of database transactions.
+
+### ACID Properties Explained
+
+#### 1. Atomicity
+- **Definition**: A transaction is an indivisible unit of work that either completes in its entirety or does not complete at all.
+- **Implication**: If any part of the transaction fails, the entire transaction is rolled back, and the database state is left unchanged.
+- **Example**: In a banking system, transferring money from account A to account B involves debiting account A and crediting account B. Atomicity ensures that either both actions occur or neither occurs.
+
+#### 2. Consistency
+- **Definition**: A transaction brings the database from one valid state to another, maintaining database invariants.
+- **Implication**: Any data written to the database must be valid according to all defined rules, including constraints, cascades, and triggers.
+- **Example**: In the same banking system, a consistency rule might require that the total balance of all accounts must remain unchanged after the transfer. If any rule is violated, the transaction will not complete.
+
+#### 3. Isolation
+- **Definition**: Transactions occur independently without interference from each other.
+- **Implication**: The intermediate state of a transaction is invisible to other transactions. This prevents transactions from reading data that is being modified by another transaction.
+- **Example**: If two transactions are transferring money from account A to account B and from account B to account C simultaneously, isolation ensures that each transaction sees a consistent view of account B.
+
+#### 4. Durability
+- **Definition**: Once a transaction has been committed, it will remain so, even in the event of a system crash.
+- **Implication**: The changes made by the transaction are permanently recorded in the database.
+- **Example**: After the banking transaction commits, the updates to account balances are permanently saved in the database, and a power failure or crash will not erase these updates.
+
+### Implementing ACID Properties
+
+#### Transaction Management
+- **Begin Transaction**: Marks the starting point of a transaction.
+- **Commit**: Saves all the changes made during the transaction.
+- **Rollback**: Undoes all changes made during the transaction if any part of the transaction fails.
+
+#### Techniques Used
+- **Write-Ahead Logging (WAL)**: Ensures that all changes are logged before being applied to the database. This log can be used to recover the database to a consistent state in case of a failure.
+- **Locking Mechanisms**: Used to achieve isolation by ensuring that multiple transactions do not interfere with each other. Locks can be at various levels (row, page, table).
+- **Checkpoints and Savepoints**: Points within a transaction where the database state can be saved. These help in rolling back to a known good state if something goes wrong.
+
+### ACID in Different Database Systems
+
+- **Relational Databases (e.g., PostgreSQL, MySQL, Oracle)**: Typically support full ACID properties.
+- **NoSQL Databases (e.g., MongoDB, Cassandra)**: Often relax ACID properties to achieve higher performance and scalability, but some NoSQL databases offer configurable options to provide ACID-like transactions.
+
+### Practical Example
+
+Consider an e-commerce application where a user purchases an item:
+1. **Atomicity**: Ensure the inventory is decremented, and the order is created or neither operation happens.
+2. **Consistency**: Ensure the item is not oversold (inventory cannot go negative).
+3. **Isolation**: Ensure multiple purchases of the same item do not interfere with each other, potentially causing overselling.
+4. **Durability**: Once the purchase is confirmed, it should be recorded permanently, even if there is a subsequent system failure.
+
+### Conclusion
+
+ACID properties are fundamental to ensuring that database transactions are processed reliably, maintaining data integrity and consistency. They are crucial for applications that require robust transaction management and data correctness, such as financial systems, e-commerce platforms, and other critical applications. Understanding and implementing ACID properties help developers design systems that can handle errors gracefully and ensure reliable data processing.
