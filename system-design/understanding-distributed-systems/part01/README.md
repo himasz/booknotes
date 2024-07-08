@@ -124,6 +124,59 @@ We can now transmit bytes over the network, but they're transmitted in plain-tex
 
 TLS provides encryption, authentication and integrity for application-layer protocols (eg HTTP).
 
+Using Transport Layer Security (TLS) to secure communications over the network is a crucial step in ensuring data confidentiality, authenticity, and integrity. Here’s a more detailed overview of how TLS achieves this:
+
+### What is TLS?
+TLS (Transport Layer Security) is a cryptographic protocol designed to provide secure communication over a computer network. It ensures that data transmitted between parties cannot be intercepted or tampered with by unauthorized entities.
+
+### Core Functions of TLS
+
+#### 1. Encryption
+TLS encrypts the data transmitted between the client and server, making it unreadable to anyone who might intercept it. This ensures confidentiality, meaning that even if someone captures the transmitted data, they cannot understand it without the decryption keys.
+
+- **Symmetric Encryption**: After the initial handshake, TLS uses symmetric encryption for data transmission, where the same key is used for both encryption and decryption.
+- **Asymmetric Encryption**: During the handshake, asymmetric encryption (using public and private keys) is used to securely exchange the symmetric encryption key.
+
+#### 2. Authentication
+TLS uses digital certificates to authenticate the identity of the parties involved in the communication. This helps prevent man-in-the-middle attacks, where an attacker might impersonate one of the parties to intercept or alter the communication.
+
+- **Certificates**: TLS relies on X.509 certificates issued by trusted Certificate Authorities (CAs). These certificates verify the identity of the server (and optionally the client).
+- **Public Key Infrastructure (PKI)**: The infrastructure that supports the creation, distribution, and management of digital certificates.
+
+#### 3. Integrity
+TLS ensures that the data transmitted has not been altered in transit. It uses message authentication codes (MACs) to verify the integrity of the data.
+
+- **Hash Functions**: TLS uses cryptographic hash functions to create a unique fingerprint of the data. Any modification of the data in transit will result in a different fingerprint, indicating tampering.
+
+### How TLS Works
+
+#### 1. Handshake Protocol
+The TLS handshake is a multi-step process that establishes a secure connection between the client and server:
+
+- **Client Hello**: The client sends a message to the server proposing supported TLS versions, cipher suites, and other settings.
+- **Server Hello**: The server responds with its chosen protocol version, cipher suite, and a digital certificate.
+- **Key Exchange**: The client and server exchange keys using asymmetric encryption. The client verifies the server’s certificate and may send its own certificate if client authentication is required.
+- **Session Keys**: Both parties generate session keys for symmetric encryption from the exchanged key material.
+- **Finished Messages**: Both parties send a message encrypted with the session key indicating that the handshake is complete.
+
+#### 2. Record Protocol
+Once the handshake is complete, the TLS record protocol takes over. It ensures the confidentiality and integrity of the data being transmitted.
+
+- **Fragmentation**: Data to be transmitted is fragmented into manageable blocks.
+- **Compression (Optional)**: Fragments may be compressed.
+- **Encryption**: Each fragment is encrypted using the session keys.
+- **MAC**: A MAC is appended to each fragment to ensure integrity.
+
+### Use Cases for TLS
+
+- **HTTPS**: Secure web browsing.
+- **Secure Email**: SMTP, IMAP, and POP3 can use TLS to secure email communication.
+- **VPNs**: Secure communication over untrusted networks.
+- **Secure FTP**: FTPS for secure file transfers.
+
+### Summary
+TLS is essential for securing data transmitted over networks, providing encryption, authentication, and integrity. By securing the communication channel, TLS protects sensitive information from being intercepted or tampered with, ensuring safe and private interactions over the internet.
+
 ## Encryption
 Encryption guarantees that transmitted data can only be read by sender and receiver. To everyone else, the data is obfuscated.
 
