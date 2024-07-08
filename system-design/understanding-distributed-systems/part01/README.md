@@ -52,6 +52,38 @@ This is typically mitigated by:
  * Leveraging connection pools
  * Not closing a TCP connection between subsequent request/response pairs
 
+   When a TCP connection is closed, the socket is not immediately released due to the TIME_WAIT state, which ensures that all packets have been properly transmitted and acknowledged. This state typically lasts for a period of time (usually 2*MSL, where MSL is the Maximum Segment Lifetime). During this time, the socket remains unavailable for new connections, which can lead to a rapid depletion of available sockets if connections are opened and closed frequently.
+   
+   To mitigate this issue, two common strategies are employed:
+   
+   ### 1. Leveraging Connection Pools
+   Connection pooling involves maintaining a pool of open connections that can be reused for multiple requests, rather than opening and closing a connection for each individual request. This approach is widely used in applications that require frequent database access or communication with external services. By reusing connections, the overhead associated with establishing new connections is reduced, and the number of sockets in the TIME_WAIT state is minimized.
+   
+   #### How Connection Pools Work:
+   - **Initialization**: A pool of connections is established when the application starts.
+   - **Reuse**: When the application needs to make a request, it borrows an existing connection from the pool.
+   - **Return**: After the request is complete, the connection is returned to the pool for future use.
+   - **Maintenance**: The pool manages the lifecycle of connections, including refreshing them if they become stale or invalid.
+   
+   ### 2. Persistent Connections (Keep-Alive)
+   Persistent connections, also known as HTTP keep-alive, involve keeping a single TCP connection open for multiple request/response pairs, rather than opening a new connection for each pair. This method is particularly useful in web applications and services where multiple HTTP requests are made in succession.
+   
+   #### Benefits of Persistent Connections:
+   - **Reduced Latency**: Eliminates the need to perform the TCP handshake for each request, reducing latency.
+   - **Resource Efficiency**: Reduces the number of sockets in the TIME_WAIT state, conserving system resources.
+   - **Improved Throughput**: Enables the reuse of the same connection for multiple requests, improving overall throughput.
+   
+   #### Implementing Persistent Connections:
+   - **HTTP/1.1**: Supports persistent connections by default. Clients and servers can use the `Connection: keep-alive` header to indicate the connection should remain open.
+   - **HTTP/2**: Further enhances connection reuse by allowing multiple streams over a single TCP connection, making it even more efficient.
+   
+### Practical Considerations
+While these strategies are effective, there are practical considerations to keep in mind:
+- **Connection Timeouts**: Properly manage timeouts to ensure that idle connections do not remain open indefinitely.
+- **Concurrency Limits**: Implement limits on the number of concurrent connections to prevent resource exhaustion.
+- **Load Balancing**: Use load balancers to distribute traffic efficiently and maintain high availability.
+
+By leveraging connection pools and persistent connections, applications can significantly reduce the overhead associated with frequent connection establishment and teardown, leading to more efficient use of system resources and improved performance.
 ## Flow Control
 Flow control is a back-off mechanism which TCP implements to prevent the sender from overflowing the receiver.
 
