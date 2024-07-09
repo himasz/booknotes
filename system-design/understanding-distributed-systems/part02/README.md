@@ -197,7 +197,6 @@ Using physical clocks for timestamp is good enough for some records such as logs
 However, when you need to derive the order of events across different processes, you'll need vector clocks.
 
 ---
-### More:
 Vector clocks and dotted version clocks are more advanced forms of logical clocks that help in tracking causality and concurrency in distributed systems.
 
 ### Vector Clocks
@@ -267,26 +266,27 @@ Consider three processes \( P_1 \), \( P_2 \), and \( P_3 \).
    \]
 
 2. **\( P_1 \) performs an operation**:
+   \[
    DVV_1 = \{ [1, 0, 0], (1, 1) \}
-   
+   \]
 
 3. **\( P_1 \) sends a message to \( P_2 \)**:
-   - Message contains DVV_1 = \{ [1, 0, 0], (1, 1) \} \).
+   - Message contains \( DVV_1 = \{ [1, 0, 0], (1, 1) \} \).
 
 4. **\( P_2 \) receives the message**:
-
+   \[
    DVV_2 = \max([0, 0, 0], [1, 0, 0]) = [1, 0, 0] \\
    DVV_2 = \{ [1, 1, 0], (2, 1) \}
-
+   \]
 
 5. **\( P_2 \) sends a message to \( P_3 \)**:
    - Message contains \( DVV_2 = \{ [1, 1, 0], (2, 1) \} \).
 
 6. **\( P_3 \) receives the message**:
-
+   \[
    DVV_3 = \max([0, 0, 0], [1, 1, 0]) = [1, 1, 0] \\
    DVV_3 = \{ [1, 1, 1], (3, 1) \}
-
+   \]
 
 ### Summary
 
