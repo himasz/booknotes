@@ -294,6 +294,7 @@ Consider three processes \( P_1 \), \( P_2 \), and \( P_3 \).
 - **Dotted Version Vectors**: Extend vector clocks by combining version vectors with dots to offer a more precise indication of causality, which is particularly useful in merging states in distributed and replicated systems.
 
 Both mechanisms help in reasoning about the order of events in distributed systems, ensuring consistency and aiding in conflict resolution.
+
 ---
 # Leader Election
 There are use-cases where 1 among N processes needs to gain exclusive rights to accessing a shared resource or to assign work to others.
