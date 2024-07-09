@@ -104,7 +104,7 @@ To break ties, the process ID can be included as a second ordering factor.
 Regardless of this, logical clocks don't imply a causal relationship. It is possible for event A to happen before B even if B's timestamp is greater.
 
 ---
-### ChatGPT:
+### More:
 Logical clocks are a fundamental concept in distributed systems to ensure the order of events without relying on physical time. Here's a detailed explanation and expansion on your summary, focusing on Lamport clocks:
 
 #### Logical Clocks and the Need for Them
@@ -197,7 +197,8 @@ Using physical clocks for timestamp is good enough for some records such as logs
 However, when you need to derive the order of events across different processes, you'll need vector clocks.
 
 ---
-Certainly! Vector clocks and dotted version clocks are more advanced forms of logical clocks that help in tracking causality and concurrency in distributed systems.
+### More:
+Vector clocks and dotted version clocks are more advanced forms of logical clocks that help in tracking causality and concurrency in distributed systems.
 
 ### Vector Clocks
 
