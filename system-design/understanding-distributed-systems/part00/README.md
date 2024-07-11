@@ -229,7 +229,7 @@ public class UserController {
 The Ports and Adapters (Hexagonal) architecture pattern effectively decouples business logic from technical details, adhering to the Dependency Inversion Principle. By defining interfaces (ports) for interaction and implementing these interfaces with adapters, you can create a flexible, maintainable, and testable system. This separation allows the business logic to remain independent of the specific technologies used, facilitating easier updates, testing, and scaling.
 
 
-Certainly! Let's create a more concrete example of a port in the context of the Ports and Adapters (Hexagonal) architecture. We'll use the example of a simple e-commerce application where we have a service to manage orders. 
+Let's create a more concrete example of a port in the context of the Ports and Adapters (Hexagonal) architecture. We'll use the example of a simple e-commerce application where we have a service to manage orders. 
 
 ### Example Scenario: Order Management Service
 
