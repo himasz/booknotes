@@ -28,6 +28,70 @@ IP, however, doesn't guarantee that data sent over the internet will arrive at t
 It provides a reliable communication channel on top of an unreliable one (IP). A stream of bytes arrives at the destination without gaps, duplication or corruption.
 This protocol also has backoff mechanisms in-place to avoid congesting the transportation network, making it a healthy protocol for the internet.
 
+---
+
+You're correct! Let's expand on this explanation to provide a more detailed overview of how communication between nodes happens in a network, focusing on addressing and routing.
+
+### Communication Between Nodes
+
+In a computer network, communication between nodes (such as computers, servers, and other devices) requires addressing and routing to ensure that data packets reach their intended destination.
+
+### 1. Addressing Nodes: IP Protocol
+
+**Internet Protocol (IP)** is responsible for addressing and routing packets of data so that they can travel across networks and arrive at the correct destination.
+
+- **IP Address**: Every device on a network has a unique IP address, which acts as an identifier for sending and receiving data. IP addresses can be either IPv4 (e.g., 192.168.1.1) or IPv6 (e.g., 2001:0db8:85a3:0000:0000:8a2e:0370:7334).
+
+### 2. Routing Packets: Routing Tables and Routers
+
+**Routing** involves moving packets across networks from the source to the destination. This process is managed by routers, which use routing tables to determine the best path for packet forwarding.
+
+- **Routers**: Devices that forward data packets between computer networks. They are responsible for directing traffic on the Internet.
+- **Routing Tables**: Data structures in routers that store routes to different network destinations. Each entry in a routing table typically includes the destination IP address, the subnet mask, the next hop (next router), and the interface to be used.
+
+### Building and Communicating Routing Tables: BGP
+
+**Border Gateway Protocol (BGP)** is the protocol used to exchange routing information between different autonomous systems (ASes) on the Internet.
+
+- **Autonomous System (AS)**: A collection of IP networks and routers under the control of a single organization that presents a common routing policy to the Internet.
+- **BGP**: BGP is used to manage how packets are routed across the Internet through the exchange of routing and reachability information between edge routers of different ASes.
+
+### How It Works
+
+1. **Addressing with IP**:
+   - Devices are assigned unique IP addresses, which identify them on the network.
+   - When a device wants to send data to another device, it includes the destination IP address in the packet header.
+
+2. **Routing with Routers**:
+   - When a packet is sent, it first goes to a local router.
+   - The router examines the destination IP address and consults its routing table to determine the next hop router along the path to the destination.
+   - The packet is forwarded from router to router, with each router making forwarding decisions based on its routing table.
+
+3. **Routing Tables and BGP**:
+   - Routers within an AS use internal routing protocols (e.g., OSPF, RIP) to build and maintain their routing tables.
+   - BGP is used to exchange routing information between different ASes, enabling routers to maintain routing tables that include routes to networks outside their own AS.
+   - BGP ensures that routers have a comprehensive view of network paths, allowing them to make informed forwarding decisions.
+
+### Example Scenario
+
+Imagine a packet being sent from a computer in New York to a server in London:
+
+1. **Source Device**: The computer in New York has an IP address (e.g., 192.0.2.1) and wants to send data to the server in London (e.g., 203.0.113.5).
+2. **Local Router**: The packet first reaches a local router in New York, which checks its routing table for the next hop.
+3. **Intermediate Routers**: The packet travels through a series of intermediate routers. Each router consults its routing table, often updated via BGP, to forward the packet closer to its destination.
+4. **Destination Router**: The final router near the server in London forwards the packet to the server's local network.
+5. **Server**: The server in London receives the packet and processes the data.
+
+### Summary
+
+- **Addressing**: Handled by the IP protocol, which assigns unique IP addresses to devices.
+- **Routing**: Managed by routers using routing tables to forward packets. Routing tables are built and updated through protocols like BGP.
+- **BGP**: The Border Gateway Protocol facilitates the exchange of routing information between autonomous systems, ensuring that routers have the necessary information to direct packets to their final destinations.
+
+This combination of IP addressing and dynamic routing protocols like BGP enables reliable and efficient communication between nodes across the complex topology of the Internet.
+
+---
+
 ## Reliability
 Achieved by:
  * splitting a stream of bytes into discrete segments, which have sequence numbers and a checksum.
