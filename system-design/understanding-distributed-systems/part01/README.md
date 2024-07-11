@@ -29,8 +29,7 @@ It provides a reliable communication channel on top of an unreliable one (IP). A
 This protocol also has backoff mechanisms in-place to avoid congesting the transportation network, making it a healthy protocol for the internet.
 
 ---
-
-You're correct! Let's expand on this explanation to provide a more detailed overview of how communication between nodes happens in a network, focusing on addressing and routing.
+In more details:
 
 ### Communication Between Nodes
 
