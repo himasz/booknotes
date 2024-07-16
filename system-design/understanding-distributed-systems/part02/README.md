@@ -560,7 +560,8 @@ The limitation of the control plane to tolerate only up to \( \frac{C}{2} \) fai
 
 This model is more suited for strong consistency than Raft, because read/write responsibilities are split between head and tail and the tail need not contact any other node before answering a read response.
 
-'''The trade-off, though, is that writes need to go through all nodes. A single slow node can slow down all the writes. In contrast, Raft doesn't require all nodes to acknowledge a write.'''
+The trade-off, though, is that writes need to go through all nodes. A single slow node can slow down all the writes. In contrast, Raft doesn't require all nodes to acknowledge a write.
+
 In addition to that, in case of failure, writes are delayed until the control plane detects the failure & mitigates it.
 
 There are a few optimizations one can do with chain replication:
