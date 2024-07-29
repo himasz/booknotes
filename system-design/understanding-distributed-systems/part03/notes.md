@@ -242,3 +242,111 @@ In this configuration:
 ### Conclusion
 
 CDNs leverage multiple caching layers and sophisticated routing mechanisms to deliver content efficiently. By using edge servers, intermediary caching layers, and partitioning strategies, CDNs can balance performance, scalability, and reliability, ensuring a smooth user experience even under high load conditions.
+
+
+Health checks are a critical component for implementing rolling updates, allowing applications to be updated to new versions without causing downtime. By using health checks, you can ensure that only healthy instances serve traffic, thus maintaining application availability and reliability during updates.
+
+### Implementing Rolling Updates with Health Checks
+
+#### Steps for Rolling Updates
+
+1. **Prepare the New Version**: 
+   - Develop and test the new version of the application to ensure it’s ready for deployment.
+
+2. **Define Health Checks**: 
+   - Set up health checks to monitor the status of your application instances. Health checks can be HTTP-based (checking a specific endpoint for a 200 OK response) or TCP-based (checking if a port is open).
+
+3. **Update Strategy**:
+   - **Gradual Rollout**: Update a small number of instances at a time to ensure the application remains available.
+   - **In-Flight Request Handling**: Ensure that in-flight requests are completed (drained) before stopping the instances for update.
+
+4. **Monitor and Roll Back**:
+   - Monitor the updated instances using health checks.
+   - If an issue is detected, roll back to the previous version to maintain application stability.
+
+### Example Using AWS ECS and ELB
+
+Amazon ECS (Elastic Container Service) and Elastic Load Balancer (ELB) can be used to demonstrate rolling updates with health checks. This example outlines the steps and configurations required to achieve this.
+
+#### Step 1: Define Health Checks
+
+1. **Elastic Load Balancer (ELB) Health Check Configuration**:
+   - Configure the ELB to perform health checks on the instances. For example, you can set the health check path to `/health`.
+
+```json
+{
+    "HealthCheck": {
+        "Target": "HTTP:80/health",
+        "Interval": 30,
+        "Timeout": 5,
+        "UnhealthyThreshold": 2,
+        "HealthyThreshold": 2
+    }
+}
+```
+
+#### Step 2: Deploy the New Version
+
+1. **Create a New Task Definition**:
+   - Define a new task definition in ECS with the updated version of your application.
+
+2. **Update the Service**:
+   - Update the ECS service to use the new task definition. ECS will handle the rolling update process.
+
+#### Step 3: Monitor and Drain Instances
+
+1. **Drain Old Instances**:
+   - Mark instances running the old version of the application as `DRAINING`. This will allow in-flight requests to complete while preventing new requests from being sent to these instances.
+
+```bash
+aws ecs update-container-instances-state --cluster my-cluster --container-instances <instance_id> --status DRAINING
+```
+
+2. **Monitor Health Checks**:
+   - Ensure that the new instances pass health checks before fully switching traffic to them. The ELB will direct traffic only to instances that pass the health check.
+
+#### Step 4: Roll Back if Necessary
+
+1. **Monitor Deployment**:
+   - Continuously monitor the deployment through CloudWatch or other monitoring tools.
+
+2. **Roll Back**:
+   - If issues are detected, roll back to the previous version by updating the service to use the old task definition.
+
+### Example Configuration for ECS Service Update
+
+```json
+{
+    "service": {
+        "cluster": "my-cluster",
+        "serviceName": "my-service",
+        "taskDefinition": "my-task:2",
+        "desiredCount": 4,
+        "deploymentConfiguration": {
+            "maximumPercent": 200,
+            "minimumHealthyPercent": 50
+        },
+        "loadBalancers": [
+            {
+                "targetGroupArn": "arn:aws:elasticloadbalancing:region:account-id:targetgroup/my-targets/abc123",
+                "containerName": "my-container",
+                "containerPort": 80
+            }
+        ],
+        "healthCheckGracePeriodSeconds": 60
+    }
+}
+```
+
+### Summary
+
+Using health checks in rolling updates ensures that only healthy instances serve traffic, maintaining application availability during deployments. Here’s how the process works:
+
+1. **Prepare and Test** the new version of the application.
+2. **Define Health Checks** to monitor instance status.
+3. **Gradual Rollout**: Update a small number of instances at a time.
+4. **Drain In-Flight Requests**: Ensure in-flight requests complete before updating instances.
+5. **Monitor** the updated instances using health checks.
+6. **Roll Back** if necessary to maintain application stability.
+
+By following these steps, you can achieve zero-downtime deployments, ensuring a seamless update process for your applications.
