@@ -275,3 +275,188 @@ FULL OUTER JOIN employees ON employee_projects.employee_id = employees.employee_
 ```
 
 By choosing the appropriate join type based on your specific requirements and understanding the relationships between your tables, you can write more efficient and effective SQL queries.
+
+
+## Avoid using functions on columns in the WHERE clause as it can prevent index usage.
+### Where to use the functions then?
+
+Avoiding the use of functions on columns in the `WHERE` clause is a common performance optimization because it can prevent the database from using indexes efficiently. Instead, you should use functions in other parts of your query where they don't interfere with index usage. Here are some strategies and places where you can safely use functions:
+
+### 1. **In the SELECT Clause**
+Functions can be used in the `SELECT` clause to transform or calculate values after filtering has been done.
+
+#### Example
+```sql
+SELECT employee_id, 
+       first_name, 
+       last_name, 
+       UPPER(first_name) AS upper_first_name
+FROM employees
+WHERE department_id = 10;
+```
+In this example, `UPPER(first_name)` is used in the `SELECT` clause to transform the output without affecting the use of indexes on `department_id`.
+
+### 2. **In the ORDER BY Clause**
+You can use functions in the `ORDER BY` clause to sort the results after they have been filtered and indexed.
+
+#### Example
+```sql
+SELECT employee_id, 
+       first_name, 
+       last_name
+FROM employees
+WHERE department_id = 10
+ORDER BY UPPER(last_name);
+```
+Here, `UPPER(last_name)` is used to sort the results without preventing the index on `department_id` from being used in the `WHERE` clause.
+
+### 3. **In the HAVING Clause**
+Functions can be used in the `HAVING` clause to filter aggregated results after the `GROUP BY` operation.
+
+#### Example
+```sql
+SELECT department_id, 
+       AVG(salary) AS average_salary
+FROM employees
+GROUP BY department_id
+HAVING AVG(salary) > 50000;
+```
+The `AVG(salary)` function is used in the `HAVING` clause to filter the grouped results.
+
+### 4. **In Subqueries or Derived Tables**
+You can apply functions in subqueries or derived tables to transform data before the main query processes it.
+
+#### Example
+```sql
+SELECT employee_id, 
+       first_name, 
+       last_name
+FROM (
+    SELECT employee_id, 
+           first_name, 
+           last_name, 
+           UPPER(last_name) AS upper_last_name
+    FROM employees
+) AS transformed_employees
+WHERE upper_last_name LIKE 'A%';
+```
+In this case, `UPPER(last_name)` is used in a subquery, and the main query then filters the transformed data.
+
+### 5. **Before Inserting/Updating Data**
+Apply functions before inserting or updating data to ensure the stored data is in the desired format, making it easier to use indexes during querying.
+
+#### Example
+```sql
+INSERT INTO employees (employee_id, first_name, last_name)
+VALUES (1, LOWER('John'), LOWER('Doe'));
+
+UPDATE employees
+SET first_name = LOWER(first_name), 
+    last_name = LOWER(last_name)
+WHERE department_id = 10;
+```
+By transforming data at the time of insertion or update, you avoid needing to use functions on these columns in the `WHERE` clause during queries.
+
+### General Example: Avoiding Functions in WHERE Clause
+#### Suboptimal Query
+```sql
+SELECT employee_id, 
+       first_name, 
+       last_name
+FROM employees
+WHERE UPPER(last_name) = 'SMITH';
+```
+This query will likely not use an index on `last_name` because the `UPPER` function is applied.
+
+#### Optimized Query
+```sql
+SELECT employee_id, 
+       first_name, 
+       last_name
+FROM employees
+WHERE last_name = 'SMITH';
+```
+If case insensitivity is needed, ensure the data is stored in a consistent format (e.g., all uppercase or all lowercase) and use an appropriate collation or an indexed computed column.
+
+### Conclusion
+While functions can be powerful tools in SQL, their placement in a query is crucial for performance. By strategically using functions in the `SELECT`, `ORDER BY`, `HAVING` clauses, subqueries, and during data manipulation, you can maintain index efficiency and optimize query performance. Avoiding functions in the `WHERE` clause ensures that indexes can be used effectively, speeding up data retrieval.
+
+
+
+### What are Views?
+
+A view in SQL is a virtual table that is based on the result set of a query. It does not store data physically, but rather provides a way to simplify complex queries by encapsulating them into a single query. Views can be thought of as stored queries that users can reference like a table.
+
+#### Key Characteristics of Views:
+- **Virtual Table:** Views do not store data themselves; they are based on the data stored in base tables.
+- **Simplification:** Complex queries can be simplified and reused by creating views.
+- **Abstraction:** Views provide a level of abstraction, allowing users to work with simplified data representations.
+- **Security:** Views can be used to restrict access to specific data by only exposing certain columns or rows.
+
+### Example of a View
+
+Creating a view:
+```sql
+CREATE VIEW ActiveCustomers AS
+SELECT customer_id, name, status
+FROM customers
+WHERE status = 'active';
+```
+
+Using the view:
+```sql
+SELECT * FROM ActiveCustomers;
+```
+
+### Query Optimization with Views
+
+Views can help with query optimization in several ways:
+
+1. **Simplifying Complex Queries:**
+   - By encapsulating complex joins and aggregations into a view, you can simplify the writing and maintenance of SQL queries.
+   - Example:
+     ```sql
+     CREATE VIEW OrderSummary AS
+     SELECT orders.order_id, customers.name, SUM(order_items.quantity * order_items.price) AS total
+     FROM orders
+     JOIN customers ON orders.customer_id = customers.id
+     JOIN order_items ON orders.order_id = order_items.order_id
+     GROUP BY orders.order_id, customers.name;
+     ```
+
+2. **Reusability:**
+   - Views allow you to reuse complex query logic without having to repeat it in multiple places. This can reduce errors and improve maintainability.
+
+3. **Performance Gains with Indexed Views (Materialized Views):**
+   - Some database systems (e.g., SQL Server) support indexed views or materialized views, where the result of the view is physically stored and indexed.
+   - These can significantly improve query performance by precomputing and storing the results of complex queries.
+
+4. **Optimization by the Query Planner:**
+   - Modern SQL databases have sophisticated query optimizers that can sometimes optimize queries involving views more efficiently than equivalent complex queries written out each time.
+   - Example:
+     ```sql
+     SELECT order_id, total
+     FROM OrderSummary
+     WHERE name = 'John Doe';
+     ```
+
+5. **Logical Data Independence:**
+   - Views can provide a level of abstraction that allows the underlying database schema to change without affecting the queries that use the view.
+   - This can lead to optimizations where the underlying schema can be tuned without requiring changes to application queries.
+
+### Limitations and Considerations
+
+1. **Performance Overhead:**
+   - While views can simplify query logic, they do not inherently improve performance unless they are materialized. Non-materialized views add a level of indirection that might sometimes lead to performance overhead.
+   - Always test performance as views can sometimes make queries slower, especially if the view involves complex operations.
+
+2. **Complex Views:**
+   - Overly complex views can become difficult to maintain and understand, which can counteract the benefits of simplification and reusability.
+
+3. **Dependency Management:**
+   - Changes to the base tables (like altering column names or data types) can break views that depend on them. Proper dependency management and documentation are crucial.
+
+### Conclusion
+
+Views are a powerful feature in SQL that can be used for simplifying complex queries, improving maintainability, and encapsulating business logic. They can also contribute to query optimization, especially when used as indexed or materialized views. However, their impact on performance should be carefully evaluated, and they should be used judiciously to ensure they provide the intended benefits without introducing unnecessary complexity or performance overhead.
+
