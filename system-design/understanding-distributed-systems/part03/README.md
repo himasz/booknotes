@@ -74,6 +74,26 @@ This has the advantage of atomically changing all static resources with the same
 Put another way, with HTTP caching, we're treating the read path differently from the write path because reads are way more common than writes.
 This is referred to as the Command-Query Responsibility Segregation (CQRS) pattern.
 
+---
+
+Your explanation about treating static resources as immutable and using version tags aligns well with a common best practice for HTTP caching. This method is effective for ensuring that clients always have the most recent version of a resource while benefiting from the performance gains of caching.
+
+### Explanation of Immutable Static Resources with Version Tags
+
+#### Advantages:
+1. **Atomic Updates**: All references to a static resource (e.g., a CSS file) can be updated at once by changing the version tag, ensuring consistency across all clients.
+2. **Cache Busting**: When a resource changes, the version tag changes, effectively “busting” the cache and forcing clients to download the new version.
+3. **Efficient Caching**: Since static resources are treated as immutable, they can be cached indefinitely by the browser, leading to fewer HTTP requests and faster load times.
+
+### Command-Query Responsibility Segregation (CQRS)
+
+CQRS is a design pattern that separates the read and write operations of a system to optimize for different types of workloads. In the context of HTTP caching for static resources:
+
+- **Read Path (Queries)**: Static resources are cached and served quickly to clients. The cache can be long-lived because the resources are immutable.
+- **Write Path (Commands)**: When a static resource is updated, it is published as a new version with a unique version tag, and all references to it are updated accordingly.
+
+---
+
 ### Reverse Proxies
 An alternative is to cache static resources on the server-side using reverse proxies.
 
