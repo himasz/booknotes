@@ -1022,6 +1022,33 @@ Solution - using the outbox pattern:
  * A process periodically starts which queries the outbox table & sends pending messages to the second data store.
  * A message channel such as Kafka can be used to achieve idempotency & guaranteed delivery.
 
+The Outbox Pattern is an effective solution for ensuring consistency when persisting data across multiple data stores, such as a relational database and a search engine like Elasticsearch. This pattern helps in maintaining eventual consistency between non-related services by leveraging a reliable message delivery mechanism.
+
+### Outbox Pattern Overview
+
+1. **Primary Data Store (Database)**:
+   - The application writes data to the primary data store (e.g., a relational database).
+   - Simultaneously, it writes a record to an "outbox" table within the same transaction to ensure atomicity.
+
+2. **Outbox Table**:
+   - This table keeps track of messages or events that need to be processed and sent to the secondary data store (e.g., Elasticsearch).
+
+3. **Message Processor**:
+   - A separate process or service periodically queries the outbox table for new records.
+   - It processes these records and sends messages to a message channel like Kafka.
+
+4. **Secondary Data Store**:
+   - A consumer service subscribes to the message channel and updates the secondary data store (e.g., Elasticsearch) accordingly.
+
+### Summary
+
+1. **Database and Outbox Table**: When saving data to the database, a corresponding entry is made in the outbox table within the same transaction, ensuring atomicity.
+2. **Message Processor**: A process periodically queries the outbox table for unprocessed messages and sends them to a message broker like Kafka.
+3. **Message Consumer**: A consumer service listens to the Kafka topic and updates the secondary data store (e.g., Elasticsearch) with the event data.
+4. **Idempotency**: Using unique identifiers (such as aggregate IDs) and proper handling of processed flags in the outbox table ensures idempotency and prevents duplicate processing.
+
+By following the Outbox Pattern, you can achieve reliable and consistent data synchronization between multiple data stores while ensuring that your system remains robust and scalable.
+---
 ## Sagas
 Problem - we're a travel booking service which coordinates booking travels + hotels via separate third-party services.
 
