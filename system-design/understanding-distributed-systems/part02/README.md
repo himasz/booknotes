@@ -1048,7 +1048,9 @@ The Outbox Pattern is an effective solution for ensuring consistency when persis
 4. **Idempotency**: Using unique identifiers (such as aggregate IDs) and proper handling of processed flags in the outbox table ensures idempotency and prevents duplicate processing.
 
 By following the Outbox Pattern, you can achieve reliable and consistent data synchronization between multiple data stores while ensuring that your system remains robust and scalable.
+
 ---
+
 ## Sagas
 Problem - we're a travel booking service which coordinates booking travels + hotels via separate third-party services.
 
