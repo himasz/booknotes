@@ -947,6 +947,71 @@ Solution from real world - fund transfer:
 
 Checks are an example of persistent messages - in other words, they are processed **exactly once**.
 
+---
+
+Asynchronous transactions can provide a viable alternative to the Two-Phase Commit (2PC) protocol, especially in scenarios where 2PC's blocking nature and reliance on high availability of participants are problematic. The analogy of a check in a fund transfer is a great real-world example of handling such transactions. Let's dive deeper into this concept and explore how asynchronous transactions work and the principles behind them.
+
+### Asynchronous Transactions
+
+#### Key Characteristics
+
+1. **Non-blocking**:
+   - Unlike 2PC, asynchronous transactions do not require all participants to be available at the same time.
+   - Each participant can process its part of the transaction independently.
+
+2. **Eventual Consistency**:
+   - The system may be in an inconsistent state temporarily, but it will eventually reach a consistent state.
+   - Participants work towards achieving consistency without blocking the entire transaction process.
+
+3. **Persistent Messaging**:
+   - Messages (or actions) in the transaction are durable and reliable, ensuring they are processed exactly once.
+   - Systems use persistent messaging mechanisms to guarantee delivery and prevent duplication.
+
+### Example: Fund Transfer using Asynchronous Transactions
+
+#### Scenario
+
+- Bank A sends a check to Bank B.
+- While the check is in transit, the accounts at both banks are in an inconsistent state.
+- Eventually, Bank B processes the check, and both accounts reflect the final, consistent state.
+
+#### Steps in the Asynchronous Transaction
+
+1. **Initiate Transaction**:
+   - Bank A issues a check and deducts the amount from the sender's account.
+   - A message (check) is sent to Bank B.
+
+2. **Transit State**:
+   - The check is in transit, representing an outstanding amount at Bank A and an unprocessed amount at Bank B.
+   - Both banks are aware of this pending transaction but operate independently.
+
+3. **Process Transaction**:
+   - Bank B receives the check, validates it, and credits the recipient's account.
+   - Bank B acknowledges the completion of the transaction back to Bank A.
+
+4. **Final Consistency**:
+   - Upon receiving the acknowledgment, Bank A confirms the transaction completion.
+   - Both banks now reflect the final, consistent state.
+
+### Implementation in Distributed Systems
+
+#### Persistent Messaging with Asynchronous Processing
+
+1. **Message Queues**:
+   - Use message queues (e.g., Kafka, RabbitMQ) to manage transaction messages between participants.
+   - Messages are durable and processed exactly once, ensuring reliability.
+
+2. **State Tracking**:
+   - Each participant maintains a log of pending and completed transactions to manage states and ensure eventual consistency.
+
+3. **Retry Mechanism**:
+   - Implement retry logic to handle transient failures and ensure that all messages are eventually processed.
+
+### Conclusion
+
+Asynchronous transactions offer a robust solution for handling distributed transactions without the blocking nature of 2PC. By leveraging persistent messaging and eventual consistency, systems can achieve reliability and durability even in the face of participant unavailability or long-lived transactions. This approach, inspired by real-world examples like check processing, provides a practical and scalable alternative for distributed systems.
+
+---
 ## Outbox Pattern
 Common issue - persist data in multiple data stores, eg Database + Elasticsearch.
 
