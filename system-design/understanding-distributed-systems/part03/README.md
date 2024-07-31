@@ -76,8 +76,6 @@ This is referred to as the Command-Query Responsibility Segregation (CQRS) patte
 
 ---
 
-Your explanation about treating static resources as immutable and using version tags aligns well with a common best practice for HTTP caching. This method is effective for ensuring that clients always have the most recent version of a resource while benefiting from the performance gains of caching.
-
 ### Explanation of Immutable Static Resources with Version Tags
 
 #### Advantages:
